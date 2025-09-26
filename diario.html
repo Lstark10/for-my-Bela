@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para a Melhor Pessoa do Mundo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .diary-container {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .diary {
+            width: 400px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .diary.opened {
+            transform: rotateY(-15deg);
+        }
+
+        .diary-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(101, 67, 33, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 20% 70%, rgba(160, 82, 45, 0.2) 0%, transparent 50%),
+                linear-gradient(145deg, #8b4513, #654321);
+            border: 3px solid #4a2c17;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: left center;
+            transition: transform 0.8s;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.1),
+                inset 0 -2px 4px rgba(0,0,0,0.3);
+            overflow: hidden;
+            z-index: 3;
+            cursor: pointer;
+        }
+
+        .diary.opened .diary-cover {
+            transform: rotateY(-180deg);
+        }
+
+        .diary-cover::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(139, 69, 19, 0.6);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .diary-cover::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 69, 19, 0.1) 2px,
+                    rgba(139, 69, 19, 0.1) 3px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(101, 67, 33, 0.1) 3px,
+                    rgba(101, 67, 33, 0.1) 4px
+                );
+            pointer-events: none;
+        }
+
+        .leather-texture {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(139, 69, 19, 0.4) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(101, 67, 33, 0.3) 1px, transparent 1px),
+                radial-gradient(circle at 50% 10%, rgba(160, 82, 45, 0.2) 1px, transparent 1px);
+            background-size: 15px 15px, 20px 20px, 25px 25px;
+        }
+
+        .buckle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 60px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .buckle-frame {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(145deg, #c0c0c0, #808080);
+            border-radius: 8px;
+            position: relative;
+            border: 2px solid #666;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.4),
+                inset 0 -2px 4px rgba(0,0,0,0.3);
+        }
+
+        .buckle-frame::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 6px;
+            background: linear-gradient(90deg, #999, #666);
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .buckle-strap {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 20px;
+            background: linear-gradient(145deg, #8b4513, #654321);
+            border-radius: 4px 4px 8px 8px;
+            border: 1px solid #4a2c17;
+        }
+
+        .cover-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f4e4c1;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            padding: 20px;
+            z-index: 5;
+            position: relative;
+        }
+
+        .chess-queen {
+            font-size: 3rem;
+            color: #f4e4c1;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.6),
+                0 0 10px rgba(244, 228, 193, 0.3);
+            margin-bottom: 15px;
+            display: block;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { 
+                text-shadow: 
+                    2px 2px 4px rgba(0,0,0,0.6),
+                    0 0 10px rgba(244, 228, 193, 0.3);
+            }
+            to { 
+                text-shadow: 
+                    2px 2px 4px rgba(0,0,0,0.6),
+                    0 0 20px rgba(244, 228, 193, 0.6),
+                    0 0 30px rgba(244, 228, 193, 0.4);
+            }
+        }
+
+        .diary-pages {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f9f7f4;
+            border: 2px solid #8b4513;
+            border-radius: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease 0.5s, visibility 0s ease 0.5s;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .diary.opened .diary-pages {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f9f7f4;
+            padding: 40px 30px;
+            background-image: 
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 24px,
+                    #e8e8e8 24px,
+                    #e8e8e8 26px
+                );
+            transform-origin: left center;
+            transition: transform 0.6s;
+            backface-visibility: hidden;
+            cursor: pointer;
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .page-content {
+            font-size: 1.1rem;
+            line-height: 26px;
+            color: #333;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+
+        .page-content h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .page-content p {
+            margin-bottom: 16px;
+            text-indent: 20px;
+        }
+
+        .page-arrow {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: rgba(139, 69, 19, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        .page.active .page-arrow {
+            opacity: 1;
+        }
+
+        .page:hover .page-arrow {
+            opacity: 0.8;
+            transform: translateY(-50%) translateX(3px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.4; }
+            50% { transform: translateY(-50%) translateX(3px); opacity: 0.8; }
+        }
+
+        .musical-note {
+            position: absolute;
+            font-size: 1.2rem;
+            color: rgba(139, 69, 19, 0.3);
+            pointer-events: none;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .note-1 { top: 50px; right: 45px; animation-delay: 0s; }
+        .note-2 { top: 120px; left: 10px; animation-delay: 1s; }
+        .note-3 { top: 200px; right: 50px; animation-delay: 2s; }
+        .note-4 { top: 300px; left: 15px; animation-delay: 1.5s; }
+        .note-5 { bottom: 100px; right: 45px; animation-delay: 0.5s; }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 20px;
+        }
+
+        .diary.opened .navigation {
+            display: flex;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #654321;
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 480px) {
+            .diary {
+                width: 320px;
+                height: 400px;
+            }
+            
+            .cover-text {
+                font-size: 1.8rem;
+                padding: 15px;
+            }
+            
+            .page {
+                padding: 30px 20px;
+            }
+            
+            .page-content {
+                font-size: 1rem;
+                line-height: 24px;
+            }
+            
+            .buckle {
+                right: 15px;
+                width: 35px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="diary-container">
+        <div class="diary" id="diary">
+            <div class="diary-cover">
+                <div class="leather-texture"></div>
+                <div class="cover-text">
+                    <span class="chess-queen">♕</span>
+                    Para a Melhor<br>Pessoa do Mundo
+                </div>
+                <div class="buckle" id="buckle">
+                    <div class="buckle-frame"></div>
+                    <div class="buckle-strap"></div>
+                </div>
+            </div>
+            
+            <div class="diary-pages">
+                <div class="page active" id="page1">
+                    <div class="page-content">
+                        <h2>Capítulo 1</h2>
+                        <p>Sei que hoje está sendo um dia difícil pra você, mas eu espero que essas breves palavras possam melhorar seu dia.</p>
+                        <p>Então, eu aqui escrevo esse pequeno diário para te lembrar do quão incrível e especial você é. Mas pra isso, resolvi colocar alguns elementos que sei que você gosta. </p>
+                        <p>Alguns, digamos que, "easter-eggs". Sei que você gosta de ler livros, então por isso tem mais esse aspecto.</p>
+                    </div>
+                    <div class="page-arrow">→</div>
+                    <div class="musical-note note-1">♪</div>
+                    <div class="musical-note note-2">♫</div>
+                    <div class="musical-note note-3">♪</div>
+                    <div class="page-number">1</div>
+                </div>
+                
+                <div class="page" id="page2">
+                    <div class="page-content">
+                        <h2>Capítulo 2</h2>
+                        <p>Sei também que você ama a música de fundo tocando. Por relembrar você de coisas boas também, das coisas incríveis que você já escreveu antes pra você mesmo. Essa música é um sentimento bom.</p>
+                        <p>Dias ruins vem e vão, e esse logo estará partindo e dando lugar pra coisas bem melhores que estão por vir.</p>
+                        <p>Mas o que nunca vai, é a sua bondade. Seu coração doce, puro e lindo.</p>
+                    </div>
+                    <div class="page-arrow">→</div>
+                    <div class="musical-note note-2">♫</div>
+                    <div class="musical-note note-4">♪</div>
+                    <div class="musical-note note-5">♫</div>
+                    <div class="page-number">2</div>
+                </div>
+                
+                <div class="page" id="page3">
+                    <div class="page-content">
+                        <h2>Capítulo 3</h2>
+                        <p>Esse pequeno diário se trata de uma mulher incrível que eu conheci, que desde o primeiro momento, eu me encantei por já saber que ela é uma mulher foda e que eu admiro muito.
+                          E que enquanto eu respirar, farei de tudo pra deixa-lá melhor, e vou estar aqui pra sempre lembra-la do quão importante ela é.
+                          Você é a luz das pessoas que cercão você, por isso es tão querida e amada. E tenha fé, assim como eu, que grande coisas estão por vir na sua vida.
+                          Você é muito forte e corajosa, e eu admiro demais isso em você. Nunca se esqueça disso, minha Bela. <3
+                        </p>
+                    </div>
+                    <div class="musical-note note-1">♪</div>
+                    <div class="musical-note note-3">♫</div>
+                    <div class="musical-note note-5">♪</div>
+                    <div class="page-number">3</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="previousPage()">← Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextPage()">Próxima →</button>
+        </div>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 3;
+        let isOpen = false;
+
+        document.getElementById('buckle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!isOpen) {
+                document.getElementById('diary').classList.add('opened');
+                isOpen = true;
+                
+                const audio = document.getElementById('backgroundMusic');
+                audio.play().catch(e => console.log('Autoplay prevented'));
+                
+                updateNavigation();
+            }
+        });
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                document.getElementById(`page${currentPage}`).classList.remove('active');
+                document.getElementById(`page${currentPage}`).classList.add('flipped');
+                currentPage++;
+                document.getElementById(`page${currentPage}`).classList.add('active');
+                updateNavigation();
+                
+                setTimeout(() => {
+                    playPageFlipSound();
+                }, 100);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                document.getElementById(`page${currentPage}`).classList.remove('active');
+                currentPage--;
+                document.getElementById(`page${currentPage}`).classList.remove('flipped');
+                document.getElementById(`page${currentPage}`).classList.add('active');
+                updateNavigation();
+                
+                setTimeout(() => {
+                    playPageFlipSound();
+                }, 100);
+            }
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            
+            if (currentPage === totalPages) {
+                const arrow = document.querySelector('.page.active .page-arrow');
+                if (arrow) arrow.style.display = 'none';
+            }
+        }
+
+        function playPageFlipSound() {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBDyx2+/MdygGLYTG8NSNOgYTZrjh7qNXFAlFnN3ux2MgBj6r1ufU');
+            audio.volume = 0.3;
+            audio.play().catch(e => {});
+        }
+
+        document.addEventListener('click', function() {
+            const audio = document.getElementById('backgroundMusic');
+            if (audio.paused && isOpen) {
+                audio.play().catch(e => {});
+            }
+        });
+
+        for (let i = 1; i <= totalPages; i++) {
+            document.getElementById(`page${i}`).addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (i === currentPage && currentPage < totalPages) {
+                    nextPage();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
